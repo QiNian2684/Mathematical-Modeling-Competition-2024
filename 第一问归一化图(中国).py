@@ -35,19 +35,25 @@ gdp_growth_rate_smooth_limited = gdp_growth_rate_smooth[:len(years_smooth_limite
 inflation_years_smooth_limited = inflation_years_smooth[inflation_years_smooth <= 2021]
 inflation_rate_smooth_limited = inflation_rate_smooth[:len(inflation_years_smooth_limited)]
 
-
 # 绘图
 plt.figure(figsize=(25, 8))
 plt.plot(years_smooth_limited, gdp_growth_rate_smooth_limited, label='经济指标', color='blue')
 plt.plot(inflation_years_smooth_limited, inflation_rate_smooth_limited, label='通胀数据', color='green')
 plt.xlabel('年份', fontsize=25, fontproperties='SimHei')
 plt.ylabel('归一化指标', fontsize=25, fontproperties='SimHei')
-plt.xticks(fontsize=25)
+plt.xticks(years, fontsize=25, fontproperties='SimHei')
 plt.yticks([0, 0.5, 1], fontsize=25)
+plt.xticks(years, fontsize=25)
 plt.axhline(y=0.5, linestyle='--', color='red')
 plt.legend(prop={'family': 'SimHei', 'size': 25})
 plt.grid(True)
 
+# 添加每两个月一条浅灰色的细实线
+months = np.arange(2001, 2022, 2/12)
+for month in months:
+    plt.axvline(x=month, linestyle='-', color='gray', alpha=0.1)
+
 # 调整布局
 plt.tight_layout(pad=2.0)
 plt.show()
+
