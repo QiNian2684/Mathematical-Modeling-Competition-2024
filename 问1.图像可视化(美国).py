@@ -3,40 +3,32 @@ import matplotlib.dates as mdates
 from datetime import datetime
 import pandas as pd
 
-size = 30
+size = 25
 
 # 数据：时间范围和对应的状态
 data = [
-    {"start": "2001-01", "end": "2002-08", "status": "衰退"},
-    {"start": "2002-08", "end": "2003-05", "status": "复苏"},
-    {"start": "2003-05", "end": "2004-08", "status": "过热"},
-    {"start": "2004-08", "end": "2006-04", "status": "复苏"},
-    {"start": "2006-04", "end": "2008-06", "status": "过热"},
-    {"start": "2008-06", "end": "2008-07", "status": "复苏"},
-    {"start": "2008-07", "end": "2009-04", "status": "衰退"},
-    {"start": "2009-04", "end": "2009-10", "status": "复苏"},
-    {"start": "2009-10", "end": "2011-10", "status": "过热"},
-    {"start": "2011-10", "end": "2011-12", "status": "滞胀"},
-    {"start": "2011-12", "end": "2013-01", "status": "衰退"},
-    {"start": "2013-01", "end": "2013-04", "status": "滞胀"},
-    {"start": "2013-04", "end": "2018-07", "status": "衰退"},
-    {"start": "2018-07", "end": "2020-01", "status": "滞胀"},
-    {"start": "2020-01", "end": "2020-10", "status": "衰退"},
-    {"start": "2020-10", "end": "2021-01", "status": "复苏"},
+    {"start": "2001-01", "end": "2002-10", "status": "衰退"},
+    {"start": "2002-10", "end": "2007-03", "status": "复苏"},
+    {"start": "2007-03", "end": "2007-07", "status": "衰退"},
+    {"start": "2007-07", "end": "2008-01", "status": "滞胀"},
+    {"start": "2008-01", "end": "2010-02", "status": "衰退"},
+    {"start": "2010-02", "end": "2010-06", "status": "复苏"},
+    {"start": "2010-06", "end": "2017-02", "status": "衰退"},
+    {"start": "2017-02", "end": "2019-01", "status": "复苏"},
+    {"start": "2019-01", "end": "2020-06", "status": "衰退"},
+    {"start": "2020-06", "end": "2020-10", "status": "复苏"},
+    {"start": "2020-10", "end": "2021-01", "status": "过热"}
 ]
+
+
 # 转换日期格式
 for entry in data:
     entry["start"] = datetime.strptime(entry["start"], "%Y-%m")
     entry["end"] = datetime.strptime(entry["end"], "%Y-%m")
-# 获取时间范围
-start_date = min(entry["start"] for entry in data)
-end_date = max(entry["end"] for entry in data)
-# 计算时间跨度（以月为单位）
-num_months = (end_date.year - start_date.year) * 12 + end_date.month - start_date.month + 1
 
 # 设置时间范围
 start_date = datetime.strptime("2001-01", "%Y-%m")
-end_date = datetime.strptime("2021-1", "%Y-%m")
+end_date = datetime.strptime("2021-12", "%Y-%m")
 
 # 创建状态列表并调整顺序
 statuses = ["复苏", "过热", "滞胀", "衰退"]
@@ -70,13 +62,6 @@ ax.xaxis.set_major_locator(mdates.YearLocator())
 ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
 plt.xticks(rotation=45, fontsize=size)
 plt.yticks(fontsize=size)
-
-# 添加每两个月一个竖灰色虚线和每年实线
-for i in range(1, num_months):
-    if i % 12 == 0:
-        ax.axvline(start_date + pd.DateOffset(months=i), color='gray', linestyle='-', linewidth=0.2, zorder=0)
-    else:
-        ax.axvline(start_date + pd.DateOffset(months=i), color='lightgray', linestyle='-', linewidth=0.1, zorder=0)
 
 # 图例放在图外
 ax.legend(loc='upper left', bbox_to_anchor=(1,1), prop={'size': size, 'family': 'SimHei'})
