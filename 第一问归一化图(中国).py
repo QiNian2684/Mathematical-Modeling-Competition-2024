@@ -1,88 +1,44 @@
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from datetime import datetime
-import pandas as pd
+import numpy as np
+from scipy.interpolate import PchipInterpolator
 
-size = 30
+size = 32
 
-# 数据：时间范围和对应的状态
-data = [
-    {"start": "2001-01", "end": "2002-08", "status": "衰退"},
-    {"start": "2002-08", "end": "2003-05", "status": "复苏"},
-    {"start": "2003-05", "end": "2004-08", "status": "过热"},
-    {"start": "2004-08", "end": "2006-04", "status": "复苏"},
-    {"start": "2006-04", "end": "2008-06", "status": "过热"},
-    {"start": "2008-06", "end": "2008-07", "status": "复苏"},
-    {"start": "2008-07", "end": "2009-04", "status": "衰退"},
-    {"start": "2009-04", "end": "2009-10", "status": "复苏"},
-    {"start": "2009-10", "end": "2011-10", "status": "过热"},
-    {"start": "2011-10", "end": "2011-12", "status": "滞胀"},
-    {"start": "2011-12", "end": "2013-01", "status": "衰退"},
-    {"start": "2013-01", "end": "2013-04", "status": "滞胀"},
-    {"start": "2013-04", "end": "2018-07", "status": "衰退"},
-    {"start": "2018-07", "end": "2020-01", "status": "滞胀"},
-    {"start": "2020-01", "end": "2020-10", "status": "衰退"},
-    {"start": "2020-10", "end": "2021-01", "status": "复苏"},
-]
-# 转换日期格式
-for entry in data:
-    entry["start"] = datetime.strptime(entry["start"], "%Y-%m")
-    entry["end"] = datetime.strptime(entry["end"], "%Y-%m")
-# 获取时间范围
-start_date = min(entry["start"] for entry in data)
-end_date = max(entry["end"] for entry in data)
-# 计算时间跨度（以月为单位）
-num_months = (end_date.year - start_date.year) * 12 + end_date.month - start_date.month + 1
+# 数据初始化
+years = np.array([2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023])
+gdp_growth_rate_normalized = np.array([0.392594454, 0.384010953, 0.34651601, 0.499495598, 0.738723883, 0.639144629, 0.70815953, 1, 0.759844207, 0.295975906, 0.762342538, 0.769650936, 0.375400787, 0.361599132, 0.284704076, 0.211197621, 0.275810957, 0.429264842, 0.380684251, 0.224745832, 0, 0.523234663, 0.102550507, 0.093132557])
+inflation_rate_normalized = np.array([0, 0.161242604, 0.014792899, 0.289940828, 0.687869822, 0.386094675, 0.366863905, 0.835798817, 1, 0.314792899, 0.591715976, 0.940828402, 0.50887574, 0.50295858, 0.427514793, 0.350591716, 0.436390533, 0.347633136, 0.408284024, 0.551775148, 0.49112426, 0.24852071, 0.400887574, 0.171597633])
 
-# 设置时间范围
-start_date = datetime.strptime("2001-01", "%Y-%m")
-end_date = datetime.strptime("2021-1", "%Y-%m")
+# 使用 PchipInterpolator 创建平滑曲线
+pchip_gdp = PchipInterpolator(years, gdp_growth_rate_normalized)
+years_smooth = np.linspace(years.min(), years.max(), 200)
+gdp_growth_rate_smooth = pchip_gdp(years_smooth)
 
-# 创建状态列表并调整顺序
-statuses = ["复苏", "过热", "滞胀", "衰退"]
+pchip_inflation = PchipInterpolator(years, inflation_rate_normalized)
+inflation_rate_smooth = pchip_inflation(years_smooth)
 
-# 创建状态字典
-status_colors = {
-    "衰退": "#E74C3C",  # 亮红色
-    "复苏": "#2ECC71",  # 亮绿色
-    "过热": "#F39C12",  # 亮橙色
-    "滞胀": "#3498DB"   # 亮蓝色
-}
+# 绘图
+plt.figure(figsize=(25, 8))
+plt.plot(years_smooth, gdp_growth_rate_smooth, label='经济指标', color='blue')
+plt.plot(years_smooth, inflation_rate_smooth, label='通胀数据', color='green')
+plt.xlabel('年份', fontsize=size, fontproperties='SimHei')
+plt.ylabel('归一化指标', fontsize=size, fontproperties='SimHei')
+plt.xticks(years, fontsize=size, fontproperties='SimHei')
+plt.yticks([0, 0.5, 1], fontsize=size)
+plt.axhline(y=0.5, linestyle='--', color='red')
+plt.legend(prop={'family': 'SimHei', 'size': size})
+plt.grid(True)
+plt.tight_layout(pad=2.0)
+plt.xticks(years, fontsize=size)
 
-# 创建绘图
-fig, ax = plt.subplots(figsize=(35, 5))
+# 设置横轴显示范围
+plt.xlim(2000, 2023)
+# 添加每两个月一条浅灰色的细实线
+months = np.arange(2000, 2023, 2/12)
+for month in months:
+    plt.axvline(x=month, linestyle='-', color='gray', alpha=0.1)
 
-# 绘制状态甬道
-for i, status in enumerate(statuses):
-    ax.fill_between([start_date + pd.DateOffset(months=i) for i in range((end_date - start_date).days // 30)], i + 0.5, i + 1.5,
-                    where=[any((entry["start"] <= start_date + pd.DateOffset(months=i) <= entry["end"]) for entry in data if entry["status"] == status) for i in range((end_date - start_date).days // 30)],
-                    color=status_colors[status], label=status)
+# 调整边距以防止标签被截断
+plt.tight_layout(pad=1.0)
 
-# 设置标题和标签，并调整字体大小和字体
-ax.set_xlabel("时间", fontsize=size, fontproperties='SimHei')
-ax.set_ylabel("状态", fontsize=size, fontproperties='SimHei')
-ax.set_yticks([i + 1 for i in range(len(statuses))])
-ax.set_yticklabels(statuses, fontsize=size, fontproperties='SimHei')
-
-# 设置横轴刻度为每年，并调整范围
-ax.set_xlim(start_date, end_date)
-ax.xaxis.set_major_locator(mdates.YearLocator())
-ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
-plt.xticks(rotation=45, fontsize=size)
-plt.yticks(fontsize=size)
-
-# 添加每两个月一个竖灰色虚线和每年实线
-for i in range(1, num_months):
-    if i % 12 == 0:
-        ax.axvline(start_date + pd.DateOffset(months=i), color='gray', linestyle='-', linewidth=0.2, zorder=0)
-    else:
-        ax.axvline(start_date + pd.DateOffset(months=i), color='lightgray', linestyle='-', linewidth=0.1, zorder=0)
-
-# 图例放在图外
-ax.legend(loc='upper left', bbox_to_anchor=(1,1), prop={'size': size, 'family': 'SimHei'})
-
-# 自动调整日期标签
-plt.tight_layout()
-
-# 显示图形
 plt.show()

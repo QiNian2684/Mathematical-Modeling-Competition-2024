@@ -3,27 +3,27 @@ import matplotlib.dates as mdates
 from datetime import datetime
 import pandas as pd
 
-size = 25
+size = 32
 
 # 数据：时间范围和对应的状态
 data = [
-    {"start": "2001-01", "end": "2002-08", "status": "衰退"},
-    {"start": "2002-08", "end": "2003-05", "status": "复苏"},
-    {"start": "2003-05", "end": "2004-08", "status": "过热"},
-    {"start": "2004-08", "end": "2006-04", "status": "复苏"},
+    {"start": "2000-01", "end": "2003-01", "status": "衰退"},
+    {"start": "2003-01", "end": "2003-05", "status": "复苏"},
+    {"start": "2003-05", "end": "2004-07", "status": "过热"},
+    {"start": "2004-07", "end": "2006-04", "status": "复苏"},
     {"start": "2006-04", "end": "2008-06", "status": "过热"},
-    {"start": "2008-06", "end": "2008-07", "status": "复苏"},
-    {"start": "2008-07", "end": "2009-04", "status": "衰退"},
-    {"start": "2009-04", "end": "2009-10", "status": "复苏"},
-    {"start": "2009-10", "end": "2011-10", "status": "过热"},
-    {"start": "2011-10", "end": "2011-12", "status": "滞胀"},
-    {"start": "2011-12", "end": "2013-01", "status": "衰退"},
-    {"start": "2013-01", "end": "2013-04", "status": "滞胀"},
-    {"start": "2013-04", "end": "2018-07", "status": "衰退"},
-    {"start": "2018-07", "end": "2020-01", "status": "滞胀"},
-    {"start": "2020-01", "end": "2020-11", "status": "衰退"},
+    {"start": "2008-06", "end": "2008-08", "status": "滞胀"},
+    {"start": "2008-08", "end": "2009-06", "status": "衰退"},
+    {"start": "2009-06", "end": "2009-09", "status": "复苏"},
+    {"start": "2009-09", "end": "2011-08", "status": "过热"},
+    {"start": "2011-08", "end": "2013-01", "status": "滞胀"},
+    {"start": "2013-01", "end": "2018-07", "status": "衰退"},
+    {"start": "2018-07", "end": "2019-11", "status": "滞胀"},
+    {"start": "2019-11", "end": "2020-11", "status": "衰退"},
     {"start": "2020-11", "end": "2021-02", "status": "复苏"},
+    {"start": "2021-02", "end": "2023-01", "status": "衰退"}
 ]
+
 
 # 转换日期格式
 for entry in data:

@@ -1,59 +1,61 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.interpolate import make_interp_spline
+from scipy.interpolate import PchipInterpolator
 
-# GDP增长率数据
-years = np.array([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024])
-gdp_growth_rate = np.array([0.41040559, 0.41450676, 0.53629448, 0.67942001, 0.68637555, 0.62533691, 0.53174012, 0.31683953, 0, 0.46676035, 0.44438848, 0.48650402, 0.44168689, 0.48700976, 0.45024969, 0.36762828, 0.4857518, 0.5832227, 0.48141754, 0.03758712, 1, 0.88217985, 0.61628423, 0])
-
-# 通胀率数据
-inflation_years = np.array([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024])
-inflation_rate = np.array([0.37740235, 0.23051205, 0.31500734, 0.35946979, 0.44347526, 0.42618223, 0.3838895, 0.49750808, 0, 0.23543261, 0.41626443, 0.28796136, 0.21490843, 0.23289338, 0.05311505, 0.19101408, 0.29496974, 0.33197079, 0.2566896, 0.18882788, 0.60184285, 1, 0.53520231, 0.40313264])
+size = 32
 
 
-# 排序数据
-sorted_indices = np.argsort(years)
-sorted_years = years[sorted_indices]
-sorted_gdp_growth_rate = gdp_growth_rate[sorted_indices]
+# 数据初始化
+years = np.array([
+    2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009,
+    2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+    2020, 2021, 2022, 2023
+])
+gdp_growth_rate_normalized = np.array([
+    0.663242269, 0.410405593, 0.41450676, 0.536294483, 0.679420008,
+    0.68637555, 0.625336912, 0.531740118, 0.316839532, 0,
+    0.466760351, 0.444388482, 0.586504024, 0.541686894, 0.487009762,
+    0.450249686, 0.367628276, 0.485751803, 0.583222704, 0.481417537,
+    0.03758712, 1, 0.882179854, 0.616284232
+])
+inflation_rate_normalized = np.array([
+    0.444043321, 0.377858002, 0.231046931, 0.315282792, 0.359807461,
+    0.444043321, 0.42599278, 0.38387485, 0.596991576, 0,
+    0.235860409, 0.416365824, 0.287605295, 0.215403129, 0.23345367,
+    0.052948255, 0.19133574, 0.294825511, 0.332129964, 0.25631769,
+    0.188929001, 0.601684717, 1, 0.535499398
+])
 
-sorted_indices_inflation = np.argsort(inflation_years)
-sorted_inflation_years = inflation_years[sorted_indices_inflation]
-sorted_inflation_rate = inflation_rate[sorted_indices_inflation]
+# 使用 PchipInterpolator 创建平滑曲线
+pchip_gdp = PchipInterpolator(years, gdp_growth_rate_normalized)
+years_smooth = np.linspace(years.min(), years.max(), 200)
+gdp_growth_rate_smooth = pchip_gdp(years_smooth)
 
-# 创建平滑曲线
-spl_gdp = make_interp_spline(sorted_years, sorted_gdp_growth_rate)
-years_smooth = np.linspace(sorted_years.min(), sorted_years.max(), 200)
-gdp_growth_rate_smooth = spl_gdp(years_smooth)
-
-spl_inflation = make_interp_spline(sorted_inflation_years, sorted_inflation_rate)
-inflation_years_smooth = np.linspace(sorted_inflation_years.min(), sorted_inflation_years.max(), 200)
-inflation_rate_smooth = spl_inflation(inflation_years_smooth)
-
-# 限制年份到2021
-years_smooth_limited = years_smooth[years_smooth <= 2021]
-gdp_growth_rate_smooth_limited = gdp_growth_rate_smooth[:len(years_smooth_limited)]
-
-inflation_years_smooth_limited = inflation_years_smooth[inflation_years_smooth <= 2021]
-inflation_rate_smooth_limited = inflation_rate_smooth[:len(inflation_years_smooth_limited)]
+pchip_inflation = PchipInterpolator(years, inflation_rate_normalized)
+inflation_rate_smooth = pchip_inflation(years_smooth)
 
 # 绘图
 plt.figure(figsize=(25, 8))
-plt.plot(years_smooth_limited, gdp_growth_rate_smooth_limited, label='经济指标', color='blue')
-plt.plot(inflation_years_smooth_limited, inflation_rate_smooth_limited, label='通胀数据', color='green')
-plt.xlabel('年份', fontsize=25, fontproperties='SimHei')
-plt.ylabel('归一化指标', fontsize=25, fontproperties='SimHei')
-plt.xticks(years, fontsize=25, fontproperties='SimHei')
-plt.yticks([0, 0.5, 1], fontsize=25)
-plt.xticks(years, fontsize=25)
+plt.plot(years_smooth, gdp_growth_rate_smooth, label='经济指标', color='blue')
+plt.plot(years_smooth, inflation_rate_smooth, label='通胀数据', color='green')
+plt.xlabel('年份', fontsize=size, fontproperties='SimHei')
+plt.ylabel('归一化指标', fontsize=size, fontproperties='SimHei')
+plt.xticks(years, fontsize=size, fontproperties='SimHei')
+plt.yticks([0, 0.5, 1], fontsize=size)
 plt.axhline(y=0.5, linestyle='--', color='red')
-plt.legend(prop={'family': 'SimHei', 'size': 25})
+plt.legend(prop={'family': 'SimHei', 'size': size})
 plt.grid(True)
+plt.tight_layout(pad=2.0)
+plt.xticks(years, fontsize=size)
 
+# 设置横轴显示范围
+plt.xlim(2000, 2023)
 # 添加每两个月一条浅灰色的细实线
-months = np.arange(2001, 2022, 2/12)
+months = np.arange(2000, 2023, 2/12)
 for month in months:
     plt.axvline(x=month, linestyle='-', color='gray', alpha=0.1)
 
-# 调整布局
-plt.tight_layout(pad=2.0)
+# 调整边距以防止标签被截断
+plt.tight_layout(pad=1.0)
+
 plt.show()
