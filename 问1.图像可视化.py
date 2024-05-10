@@ -29,18 +29,18 @@ for year, category in data:
 # 设置颜色和行位置
 color_map = {'A': '#FF6347', 'B': '#4682B4', 'C': '#3CB371', 'D': '#FFA500'}
 # 设置y_positions以确保中心对齐
-base_position = 5
-spacing = 1.5
+base_position = 1
+spacing = 1
 y_positions = {category: base_position + i * spacing for i, category in enumerate('ABCD')}
 
 # 绘图
-fig, ax = plt.subplots(figsize=(15, 6))
+fig, ax = plt.subplots(figsize=(15, 3))
 for category, ranges in categories.items():
     # 设置颜色条高度为1，并根据中心对齐调整
     ax.broken_barh(ranges, (y_positions[category] + 0.25, 1), facecolors=color_map[category], label=category)
 
 # 设置图表
-ax.set_ylim(4, 12)  # 调整y轴的限制以适应新的y_positions和条高度
+ax.set_ylim(1, 8.5)  # 调整y轴的限制以适应新的y_positions和条高度
 ax.set_xlim(1990, 2025)
 ax.set_yticks([y + 0.75 for y in y_positions.values()], labels=y_positions.keys())
 ax.set_xlabel('年份')
