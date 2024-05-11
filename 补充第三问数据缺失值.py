@@ -8,7 +8,7 @@ df = pd.read_excel('问题三数据.xlsx', parse_dates=['日期'])
 
 # 设置日期范围
 start_date = datetime(2004, 1, 1)
-end_date = datetime(2020, 6, 30)
+end_date = datetime(2022, 6, 30)
 all_dates = pd.date_range(start=start_date, end=end_date, freq='D')
 
 # 将日期设置为索引
@@ -50,4 +50,4 @@ df.rename(columns={'index': '日期'}, inplace=True)
 df['日期'] = df['日期'].dt.strftime('%Y-%m-%d')
 
 # 输出到新的Excel文件
-df.to_excel('completed_data.xlsx', index=False)
+df.to_excel('问题三数据(处理后).xlsx', index=False)
