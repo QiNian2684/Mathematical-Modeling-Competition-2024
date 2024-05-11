@@ -12,8 +12,8 @@ expected_daily_returns = returns.mean()
 variance_daily_returns = returns.var()
 
 # 计算年期望收益率和年方差
-annual_returns = (1 + expected_daily_returns) ** 252 - 1
-annual_variance_returns = variance_daily_returns * 252
+annual_returns = (1 + expected_daily_returns) ** 365 - 1
+annual_variance_returns = variance_daily_returns * 365
 
 # 打印结果
 print("日期望收益率:")
