@@ -32,7 +32,7 @@ for entry in data:
 
 # 设置时间范围
 start_date = datetime.strptime("2001-01", "%Y-%m")
-end_date = datetime.strptime("2021-12", "%Y-%m")
+end_date = datetime.strptime("2023-1", "%Y-%m")
 
 # 创建状态列表并调整顺序
 statuses = ["复苏", "过热", "滞胀", "衰退"]

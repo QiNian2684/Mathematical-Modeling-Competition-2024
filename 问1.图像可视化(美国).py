@@ -18,7 +18,8 @@ data = [
     {"start": "2017-02", "end": "2018-11", "status": "复苏"},
     {"start": "2018-11", "end": "2020-06", "status": "衰退"},
     {"start": "2020-06", "end": "2020-10", "status": "复苏"},
-    {"start": "2020-10", "end": "2023-01", "status": "过热"}
+    {"start": "2020-10", "end": "2020-11", "status": "过热"},
+    {"start": "2020-11", "end": "2023-01", "status": "滞胀"}
 ]
 
 
@@ -30,7 +31,7 @@ for entry in data:
 
 # 设置时间范围
 start_date = datetime.strptime("2001-01", "%Y-%m")
-end_date = datetime.strptime("2021-12", "%Y-%m")
+end_date = datetime.strptime("2023-1", "%Y-%m")
 
 # 创建状态列表并调整顺序
 statuses = ["复苏", "过热", "滞胀", "衰退"]
