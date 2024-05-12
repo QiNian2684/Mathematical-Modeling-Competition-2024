@@ -2,6 +2,11 @@ import pandas as pd
 import numpy as np
 import glob
 import os
+import xlsxwriter
+
+# 定义无风险利率和基准年化回报率
+risk_free_rate = 0.017
+benchmark_return = 0.0917
 
 # 设置文件目录路径
 folder_path = '分段表格'
@@ -28,15 +33,22 @@ else:
         expected_daily_returns = returns.mean()
         variance_daily_returns = returns.var()
 
-        # 计算日标准差
-        std_dev_daily_returns = np.sqrt(variance_daily_returns)
-
         # 计算年期望收益率和年方差
         annual_returns = (1 + expected_daily_returns) ** 365 - 1
         annual_variance_returns = variance_daily_returns * 365
-
-        # 计算年标准差
         std_dev_annual_returns = np.sqrt(annual_variance_returns)
+
+        # 计算夏普比率
+        sharpe_ratio = (annual_returns - risk_free_rate) / std_dev_annual_returns
+
+        # 计算索提诺比率
+        negative_returns = returns[returns < 0]
+        semi_deviation = np.sqrt(negative_returns.var() * 365)
+        sortino_ratio = (annual_returns - risk_free_rate) / semi_deviation
+
+        # 计算信息比率
+        tracking_error = np.sqrt((returns - benchmark_return) ** 2).mean() * np.sqrt(365)
+        information_ratio = (annual_returns - benchmark_return) / tracking_error
 
         # 文件名作为DataFrame的标签
         file_name = os.path.basename(file).split('.')[0]  # 去除路径和文件扩展名
@@ -49,8 +61,11 @@ else:
                 '年期望收益率': [annual_returns[asset]],
                 '日方差': [variance_daily_returns[asset]],
                 '年方差': [annual_variance_returns[asset]],
-                '日标准差': [std_dev_daily_returns[asset]],
-                '年标准差': [std_dev_annual_returns[asset]]
+                '日标准差': [std_dev_annual_returns[asset]],
+                '年标准差': [std_dev_annual_returns[asset]],
+                '夏普比率': [sharpe_ratio[asset]],
+                '索提诺比率': [sortino_ratio[asset]],
+                '信息比率': [information_ratio[asset]]
             })
 
             # 将结果添加到总DataFrame中
@@ -65,8 +80,8 @@ else:
         workbook = writer.book
         worksheet = writer.sheets['Analysis Results']
 
-        # 设置列的格式，防止显示为科学计数法，并尽量保留所有小数位
+        # 设置列的格式
         format = workbook.add_format({'num_format': '0.###############'})
-        worksheet.set_column('B:G', None, format)
+        worksheet.set_column('B:K', None, format)
 
     print("所有文件已分析完毕并汇总到一个Excel文件。")
